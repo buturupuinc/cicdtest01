@@ -1,10 +1,23 @@
-pipelineJob('Hello World of cicd Test 01') {
-  steps {
-    shell('node {
-                    stage "Hello world"
-                    echo "Hello World 1"
+pipelineJob("pipeline-calls-other-pipelie") {
+    logRotator{
+        numToKeep 30
+    }
+    definition {
+        cps {
+            sandbox()
+            script("""
+                node {
+                    stage 'Hello world'
+                    echo 'Hello World 1'
 
-                }'
-         )
-  }
+                    stage "invoke another pipeline"
+                    build 'pipeline-being-called'
+
+                    stage 'Goodbye world'
+                    echo "Goodbye world"
+                }
+            """.stripIndent())
+        }
+    }
 }
+
